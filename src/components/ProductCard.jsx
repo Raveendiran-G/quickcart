@@ -1,3 +1,4 @@
+import '../styles/ProductCard.css';
 function ProductCard({ product, onAddToCart }) {
   return (
     <div className="product-card">
@@ -30,3 +31,4 @@ function ProductCard({ product, onAddToCart }) {
     </div>
   );
 }
+export default ProductCard;

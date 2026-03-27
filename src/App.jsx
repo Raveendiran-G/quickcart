@@ -5,6 +5,7 @@ import CartSidebar from './components/CartSidebar';
 import { products } from './data/products';
 import './styles/App.css';
 
+
 function App() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -43,31 +44,36 @@ function App() {
     setIsCartOpen(!isCartOpen);
   };
 
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
   return (
     <div className="app">
-      <Header toggleCart={toggleCart} />
+
+      {/* ✅ FIXED HEADER */}
+      <Header 
+        cartItemCount={getTotalItems()}
+        onCartClick={toggleCart}
+      />
 
       <main className="main-content">
-        <ProductList 
-          products={products} 
+        <ProductList
+          products={products}
           onAddToCart={addToCart}
         />
       </main>
 
-      {/* ✅ Cart Sidebar */}
-      <CartSidebar 
+      <CartSidebar
         isOpen={isCartOpen}
         onClose={toggleCart}
         cart={cart}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeFromCart}
       />
+
     </div>
   );
 }
 
 export default App;
-<Header 
-  cartItemCount={getTotalItems()} 
-  onCartClick={toggleCart}
-/>
