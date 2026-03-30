@@ -1,88 +1,51 @@
 import React from 'react';
+import { useCart } from '../context/CartContext';
 import '../styles/CartSidebar.css';
 
-function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }) {
+function CartSidebar() {
+  const {
+    cart,
+    isCartOpen,
+    toggleCart,
+    updateQuantity,
+    removeFromCart,
+    getTotalPrice
+  } = useCart();
 
-  // ✅ Calculate total price
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  // 🛑 Prevent crash if cart is somehow undefined
+  if (!cart) return null;
+
+  if (!isCartOpen) return null;
 
   return (
-    <div className={`cart-sidebar ${isOpen ? 'open' : ''}`}>
-      
-      {/* Header */}
-      <div className="cart-header">
-        <h2>Your Cart</h2>
-        <button onClick={onClose} className="close-btn">✕</button>
-      </div>
+    <div className="cart-sidebar">
+      <button onClick={toggleCart}>Close</button>
 
-      {/* Cart Items */}
-      <div className="cart-items">
-        {cart.length === 0 ? (
-          <p className="empty-cart">Your cart is empty</p>
-        ) : (
-         cart.map(item => (
-  <div key={item.id} className="cart-item">
+      {cart.length === 0 ? (
+        <p>Cart is empty</p>
+      ) : (
+        <>
+          {cart.map(item => (
+            <div key={item.id}>
+              <h4>{item.name}</h4>
+              <p>${item.price}</p>
 
-    {/* ✅ Product Image */}
-    <img 
-      src={item.image} 
-      alt={item.name} 
-      className="cart-item-image" 
-    />
+              <input
+                type="number"
+                value={item.quantity}
+                onChange={(e) =>
+                  updateQuantity(item.id, Number(e.target.value))
+                }
+              />
 
-    {/* ✅ Product Details */}
-    <div className="cart-item-details">
-      <h4 className="cart-item-name">{item.name}</h4>
-      <p className="cart-item-price">${item.price.toFixed(2)}</p>
+              <button onClick={() => removeFromCart(item.id)}>
+                Remove
+              </button>
+            </div>
+          ))}
 
-      {/* ✅ Subtotal */}
-      <p className="cart-item-subtotal">
-        Subtotal: ${(item.price * item.quantity).toFixed(2)}
-      </p>
-    </div>
-
-    {/* ✅ Quantity Controls */}
-    <div className="cart-item-quantity">
-      <button 
-        className="quantity-btn"
-        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-      >
-        −
-      </button>
-
-      <span className="quantity-display">{item.quantity}</span>
-
-      <button 
-        className="quantity-btn"
-        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-      >
-        +
-      </button>
-    </div>
-
-    {/* ✅ Remove Button */}
-    <button 
-      className="remove-btn"
-      onClick={() => onRemoveItem(item.id)}
-      aria-label="Remove item"
-    >
-      ✕
-    </button>
-
-  </div>
-)))}
-      </div>
-
-      {/* Footer with total */}
-      {cart.length > 0 && (
-        <div className="cart-footer">
-          <div className="cart-total">
-            <span>Total:</span>
-            <span>${calculateTotal().toFixed(2)}</span>
-          </div>
-        </div>
+          <h3>Total: ${getTotalPrice()}</h3>
+        </>
       )}
     </div>
   );
